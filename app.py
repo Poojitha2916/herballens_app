@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 import json
 from PIL import Image
+from tensorflow.keras.applications.efficientnet import preprocess_input
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
@@ -11,7 +12,7 @@ st.set_page_config(
 )
 
 st.title("🌿 HerbalLens – Herbal Plant Identification")
-st.write("Upload a leaf image to identify the herbal plant")
+st.write("Upload a clear leaf image to identify the herbal plant")
 
 # ---------------- LOAD MODEL ----------------
 @st.cache_resource
@@ -25,14 +26,14 @@ with open("class_indices.json", "r") as f:
     class_indices = json.load(f)
 
 # reverse dictionary (index → class name)
-class_names = {v: k for k, v in class_indices.items()}
+class_names = {int(v): k for k, v in class_indices.items()}
 
 # ---------------- IMAGE PREPROCESSING ----------------
 def preprocess_image(image):
     image = image.resize((224, 224))
     image = np.array(image)
-    image = image / 255.0
     image = np.expand_dims(image, axis=0)
+    image = preprocess_input(image)   # ✅ MUST match training
     return image
 
 # ---------------- FILE UPLOAD ----------------
@@ -47,11 +48,24 @@ if uploaded_file is not None:
 
     if st.button("Predict 🌱"):
         with st.spinner("Identifying plant..."):
+
             img = preprocess_image(image)
             predictions = model.predict(img)
-            predicted_class = np.argmax(predictions)
-            plant_name = class_names[predicted_class]
-            confidence = predictions[0][predicted_class] * 100
 
-        st.success(f"🌿 **Plant Name:** {plant_name}")
-        st.info(f"🔍 **Confidence:** {confidence:.2f}%")
+            predicted_class = int(np.argmax(predictions[0]))
+            confidence = float(np.max(predictions[0])) * 100
+            plant_name = class_names[predicted_class]
+
+        # ---------------- OUTPUT ----------------
+        if confidence < 50:
+            st.warning("⚠️ Low confidence prediction. Please upload a clearer leaf image.")
+        else:
+            st.success(f"🌿 **Plant Name:** {plant_name}")
+            st.info(f"🔍 **Confidence:** {confidence:.2f}%")
+
+        # ---------------- DEBUG (TEMPORARY) ----------------
+        with st.expander("🔍 Debug Info"):
+            st.write("Model input shape:", model.input_shape)
+            st.write("Model output shape:", model.output_shape)
+            st.write("Prediction vector:", predictions[0])
+            st.write("Predicted index:", predicted_class)
