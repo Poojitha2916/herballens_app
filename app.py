@@ -6,7 +6,10 @@ from PIL import Image
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
 # ---------------- PAGE CONFIG ----------------
-st.set_page_config(page_title="HerbalLens 🌿", layout="centered")
+st.set_page_config(
+    page_title="HerbalLens 🌿",
+    layout="centered"
+)
 
 st.title("🌿 HerbalLens – Herbal Plant Identification")
 st.write("Upload a clear leaf image to identify the herbal plant, its description, and medicinal uses.")
@@ -24,7 +27,7 @@ with open("class_indices.json", "r") as f:
 
 class_names = {int(v): k for k, v in class_indices.items()}
 
-# ---------------- PLANT DESCRIPTIONS (ALL 86) ----------------
+# ---------------- PLANT DESCRIPTIONS ----------------
 plant_descriptions = {
     "Adas": "Adas is an aromatic herb commonly used in traditional medicine. It supports digestion and relieves bloating.",
     "Aloevera": "A succulent medicinal plant known for its soothing gel. Widely used for skin care and digestive health.",
@@ -108,25 +111,103 @@ plant_descriptions = {
     "Sereh": "Another name for lemongrass. Used for digestion and stress relief.",
     "Sirih": "A medicinal leaf plant. Used for oral health and antibacterial purposes.",
     "Srikaya": "A fruit-bearing medicinal plant. Supports digestion and antioxidants.",
-    "Tin": "Also known as fig plant. Rich in fiber splitting digestive benefits.",
+    "Tin": "Also known as fig plant. Rich in fiber and supports digestion.",
     "Tulasi": "A sacred medicinal plant in India. Used for immunity and respiratory health.",
     "Wood_sorel": "A medicinal leafy plant. Used as cooling agent and digestive aid.",
     "Zigzag": "An ornamental medicinal plant. Used in traditional herbal remedies."
 }
 
-# ---------------- PLANT USES (ALL 86) ----------------
+# ---------------- PLANT USES (YOUR PROVIDED LIST) ----------------
 plant_uses = {
-    k: [
-        "Improves digestion",
-        "Boosts immunity",
-        "Reduces inflammation",
-        "Supports overall wellness",
-        "Used in traditional medicine"
-    ]
-    for k in plant_descriptions.keys()
+    "Adas": ["Digestive aid", "Relieves bloating", "Improves appetite"],
+    "Aloevera": ["Skin care", "Burn healing", "Digestive health"],
+    "Amla": ["Vitamin C rich", "Boosts immunity", "Hair health"],
+    "Amruta_Balli": ["Immunity booster", "Fever management", "Detoxification"],
+    "Andong Merah": ["Anti-inflammatory", "Wound healing"],
+    "Arali": ["Used in traditional remedies", "Supports wellness"],
+    "Ashoka": ["Gynecological health", "Menstrual regulation"],
+    "Ashwagandha": ["Stress relief", "Strength & vitality"],
+    "Avacado": ["Heart health", "Rich in healthy fats"],
+    "Bamboo": ["Anti-inflammatory", "Bone health"],
+    "Basale": ["Improves digestion", "Anti-inflammatory"],
+    "Belimbing Wulu": ["Antioxidant", "Digestive aid"],
+    "Beluntas": ["Body odor control", "Digestive health"],
+    "Betadin": ["Antiseptic plant", "Wound care"],
+    "Betel": ["Oral health", "Digestive stimulant"],
+    "Betel_Nut": ["Digestive stimulant", "Traditional chewing plant"],
+    "Brahmi": ["Memory enhancement", "Brain tonic"],
+    "Castor": ["Laxative", "Joint pain relief"],
+    "Cincau Perdu": ["Cooling agent", "Digestive relief"],
+    "Curry_Leaf": ["Controls diabetes", "Improves digestion"],
+    "Daun Afrika": ["Anti-cancer properties", "Immunity support"],
+    "Daun Cabe Jawa": ["Digestive aid", "Anti-inflammatory"],
+    "Daun Cocor Bebek": ["Wound healing", "Anti-inflammatory"],
+    "Daun Kumis Kucing": ["Kidney health", "Diuretic"],
+    "Daun Mangkokan": ["Hair growth", "Skin care"],
+    "Daun Suji": ["Natural coloring", "Digestive aid"],
+    "Daun Ungu": ["Hemorrhoid relief", "Anti-inflammatory"],
+    "Dewa Ndaru": ["Traditional healing plant", "General wellness"],
+    "Doddapatre": ["Cold relief", "Digestive aid"],
+    "Ekka": ["Pain relief", "Anti-inflammatory"],
+    "Gandarusa": ["Rheumatic pain relief", "Anti-inflammatory"],
+    "Ganike": ["Traditional herbal remedy", "General wellness"],
+    "Garut": ["Digestive health", "Energy booster"],
+    "Gauva": ["Controls diarrhea", "Rich in antioxidants"],
+    "Geranium": ["Aromatherapy", "Skin care"],
+    "Henna": ["Cooling effect", "Hair & skin health"],
+    "Hibiscus": ["Hair growth", "Blood pressure regulation"],
+    "Honge": ["Skin diseases", "Anti-inflammatory"],
+    "Honje": ["Digestive aid", "Anti-oxidant"],
+    "Iler": ["Anti-inflammatory", "Wound healing"],
+    "Insulin": ["Blood sugar control", "Diabetes management"],
+    "Jahe": ["Digestive aid", "Reduces nausea"],
+    "Jasmine": ["Stress relief", "Aromatherapy"],
+    "Jeruk Nipis": ["Vitamin C source", "Detoxification"],
+    "Kapulaga": ["Improves digestion", "Freshens breath"],
+    "Kayu Putih": ["Cold relief", "Muscle pain relief"],
+    "Kecibling": ["Urinary health", "Diuretic"],
+    "Kemangi": ["Digestive aid", "Anti-bacterial"],
+    "Kembang Sepatu": ["Hair care", "Blood pressure control"],
+    "Kenanga": ["Stress relief", "Aromatherapy"],
+    "Kunyit": ["Anti-inflammatory", "Wound healing"],
+    "Lampes": ["Traditional herbal medicine", "General wellness"],
+    "Legundi": ["Respiratory health", "Anti-inflammatory"],
+    "Lemon": ["Vitamin C", "Detoxification"],
+    "Lemon_grass": ["Stress reduction", "Digestive aid"],
+    "Lidah Buaya": ["Skin care", "Digestive health"],
+    "Mahkota Dewa": ["Anti-cancer properties", "Blood purification"],
+    "Mango": ["Digestive enzymes", "Immunity booster"],
+    "Melati": ["Stress relief", "Skin care"],
+    "Meniran": ["Liver protection", "Immunity booster"],
+    "Mint": ["Digestive aid", "Cold relief"],
+    "Murbey": ["Blood sugar regulation", "Antioxidant"],
+    "Nagadali": ["Traditional remedy", "General wellness"],
+    "Neem": ["Blood purification", "Skin diseases"],
+    "Nilam": ["Aromatherapy", "Skin care"],
+    "Nithyapushpa": ["Traditional medicine", "General wellness"],
+    "Nooni": ["Digestive aid", "Immunity booster"],
+    "Pacing Petul": ["Anti-inflammatory", "Pain relief"],
+    "Pandan": ["Digestive aid", "Aromatherapy"],
+    "Pappaya": ["Digestive enzymes", "Gut health"],
+    "Patah Tulang": ["Bone healing", "Anti-inflammatory"],
+    "Pecut Kuda": ["Anti-inflammatory", "Traditional medicine"],
+    "Pepper": ["Improves digestion", "Cold relief"],
+    "Pomegranate": ["Antioxidant rich", "Heart health"],
+    "Raktachandini": ["Skin diseases", "Blood purifier"],
+    "Rose": ["Skin hydration", "Aromatherapy"],
+    "Saga Manis": ["Respiratory health", "Cough relief"],
+    "Sapota": ["Energy booster", "Digestive health"],
+    "Secang": ["Blood purification", "Anti-oxidant"],
+    "Sereh": ["Digestive aid", "Stress relief"],
+    "Sirih": ["Oral health", "Anti-bacterial"],
+    "Srikaya": ["Digestive aid", "Antioxidant"],
+    "Tin": ["Digestive health", "Rich in fiber"],
+    "Tulasi": ["Cold & cough", "Immunity booster"],
+    "Wood_sorel": ["Cooling agent", "Digestive aid"],
+    "Zigzag": ["Traditional ornamental medicinal plant"]
 }
 
-# ---------------- IMAGE PREPROCESSING ----------------
+# ---------------- IMAGE PREPROCESS ----------------
 def preprocess_image(image):
     image = image.resize((224, 224))
     image = np.expand_dims(np.array(image), axis=0)
@@ -149,8 +230,8 @@ if uploaded:
         st.info(f"Confidence: {conf:.2f}%")
 
         st.subheader("📖 Description")
-        st.write(plant_descriptions.get(plant))
+        st.write(plant_descriptions.get(plant, "Description not available."))
 
-        st.subheader("🌱 Uses & Benefits")
-        for u in plant_uses.get(plant, []):
-            st.markdown(f"✅ {u}")
+        st.subheader("🌱 Medicinal Uses")
+        for use in plant_uses.get(plant, ["Uses not available."]):
+            st.markdown(f"✅ {use}")
